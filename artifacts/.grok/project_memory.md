@@ -1,0 +1,3 @@
+- Human Anatomy Unit 1 project: lectures L1–L5 in artifacts/Lectures; study guide HA Unit 1 Study Guide ACCESSIBLE.docx. Built Core Study Pack + quiz site from those sources. [2026-08-28]
+- Quiz site files at artifacts root: index.html, styles.css, app.js, questions.js. Study pack: HA_Unit1_Core_Study_Pack.docx. Answer tags formatted like L4 1 A. [2026-08-28]
+- Subsequent quizzes exclude correctly answered items via localStorage key ha_unit1_correct_ids_v1. [2026-08-28]
