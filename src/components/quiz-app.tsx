@@ -93,17 +93,13 @@ export function QuizApp() {
   }
 
   return (
-    <div className="min-h-dvh bg-bg text-fg">
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10">
+    <div className="quiz-shell">
+      <div className="quiz-wrap">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <p className="font-mono text-xs tracking-[0.18em] text-primary uppercase">
-              Human Anatomy · Unit 1
-            </p>
-            <h1 className="mt-1 font-display text-3xl leading-tight tracking-tight sm:text-4xl">
-              Core Study Quiz
-            </h1>
-            <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+            <p className="quiz-kicker">Human Anatomy · Unit 1</p>
+            <h1 className="quiz-title">Core Study Quiz</h1>
+            <p className="quiz-lede">
               One question at a time. Answers stay tagged by lecture, such as L4 1 A.
             </p>
           </div>
@@ -111,12 +107,12 @@ export function QuizApp() {
         </header>
 
         {screen === "start" && (
-          <section className="rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
+          <section className="quiz-card">
             <h2 className="text-lg font-medium">Lecture picker</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="quiz-lede" style={{ marginTop: 4 }}>
               Questions come from the Unit 1 study guide; keys are taken from the lecture decks.
             </p>
-            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="quiz-pick">
               {LECTURES.map((item) => {
                 const total = countByLecture(item.id);
                 const done = masteredCounts[item.id] ?? 0;
@@ -125,12 +121,8 @@ export function QuizApp() {
                   <button
                     key={item.id}
                     type="button"
+                    data-active={active}
                     onClick={() => setLecture(item.id)}
-                    className={`rounded-lg border px-4 py-3 text-left transition-colors ${
-                      active
-                        ? "border-primary bg-muted"
-                        : "border-border bg-bg hover:bg-muted"
-                    }`}
                   >
                     <span className="block font-medium">{item.title}</span>
                     <span className="mt-1 block font-mono text-xs text-muted-foreground">
@@ -169,11 +161,9 @@ export function QuizApp() {
         )}
 
         {screen === "quiz" && current && (
-          <section className="rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
+          <section className="quiz-card">
             <div className="flex items-center justify-between gap-3">
-              <span className="rounded-full bg-muted px-3 py-1 font-mono text-xs font-medium text-primary">
-                {current.tag}
-              </span>
+              <span className="quiz-tag">{current.tag}</span>
               <span className="font-mono text-xs text-muted-foreground">
                 Question {index + 1} of {queue.length}
               </span>
@@ -192,23 +182,24 @@ export function QuizApp() {
                 }}
                 disabled={locked}
                 placeholder="Type your answer"
-                className="mt-5 h-12 w-full rounded-md border border-border bg-bg px-3 text-base text-fg outline-none ring-ring focus:ring-2"
+                className="quiz-input"
               />
             ) : (
               <div className="mt-5 flex flex-col gap-2">
                 {(current.choices ?? []).map((choice, i) => {
                   const letter = String.fromCharCode(65 + i);
-                  let tone = "border-border bg-bg hover:bg-muted";
-                  if (locked && i === current.answer) tone = "border-ok bg-muted";
-                  if (locked && selected === i && i !== current.answer) tone = "border-bad bg-muted";
-                  if (!locked && selected === i) tone = "border-primary bg-muted";
+                  let state = "";
+                  if (locked && i === current.answer) state = "right";
+                  else if (locked && selected === i && i !== current.answer) state = "wrong";
+                  else if (!locked && selected === i) state = "selected";
                   return (
                     <button
                       key={choice}
                       type="button"
                       disabled={locked}
+                      data-state={state}
+                      className="quiz-choice"
                       onClick={() => setSelected(i)}
-                      className={`min-h-12 rounded-lg border px-4 py-3 text-left ${tone}`}
                     >
                       {current.type === "tf" ? choice : `${letter}. ${choice}`}
                     </button>
@@ -237,11 +228,7 @@ export function QuizApp() {
             </div>
 
             {locked && wasCorrect !== null && (
-              <div
-                className={`mt-5 rounded-lg border p-4 ${
-                  wasCorrect ? "border-ok" : "border-bad"
-                }`}
-              >
+              <div className={`quiz-feedback ${wasCorrect ? "ok" : "bad"}`}>
                 <p className="flex items-center gap-2 font-medium">
                   {wasCorrect ? <Check className="size-4 text-ok" /> : <X className="size-4 text-bad" />}
                   {wasCorrect ? "Correct" : "Incorrect"} · tagged {current.tag}
@@ -261,9 +248,9 @@ export function QuizApp() {
         )}
 
         {screen === "end" && (
-          <section className="rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6">
+          <section className="quiz-card">
             <h2 className="text-lg font-medium">Session complete</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="quiz-lede">
               You answered {runCorrect} of {runAnswered} correctly this session. Mastered items stay
               excluded until you reset progress.
             </p>
